@@ -105,6 +105,16 @@ h2{font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:upperca
 .zametka b{color:var(--ink); font-weight:600}
 .zametka p{margin:0 0 .7em}
 .zametka p:last-child{margin:0}
+.proba textarea{width:100%; min-height:150px; resize:vertical; font-family:var(--sans);
+  font-size:14.5px; line-height:1.5; color:var(--ink); background:var(--near);
+  border:1px solid var(--line); border-radius:13px; padding:14px 15px}
+.proba textarea:focus{outline:none; border-color:var(--sig)}
+.proba-niz{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:12px}
+.knopka{font-family:inherit; font-size:15px; font-weight:500; cursor:pointer;
+  padding:11px 22px; border-radius:11px; border:none; background:var(--sig);
+  color:#04120C; transition:.2s}
+.knopka:hover{filter:brightness(1.08)}
+.knopka:disabled{opacity:.5; cursor:default}
 footer{padding:26px 0 44px; color:var(--mute); font-size:13px}
 </style>
 </head>
@@ -148,6 +158,21 @@ footer{padding:26px 0 44px; color:var(--mute); font-size:13px}
   <div id="razmery"></div>
 </section>
 
+<section>
+  <h2>Попробовать на своих отзывах</h2>
+  <p class="pod">Откройте любой свой товар на Озоне, выделите отзывы мышкой и вставьте сюда. Разбор посчитается прямо здесь, в браузере: ничего никуда не отправляется, ключи не нужны. Мусор со страницы — рекламу, кнопки, длительности видео — программа отсеет сама.</p>
+  <div class="proba">
+    <textarea id="svoi" placeholder="Вставьте сюда скопированные отзывы…"></textarea>
+    <div class="proba-niz">
+      <button class="knopka" id="razobrat" type="button">Разобрать</button>
+      <button class="sbros" id="ochistit" type="button">очистить</button>
+      <span class="skolko" id="proba-itog"></span>
+    </div>
+  </div>
+  <div id="proba-papki" class="papki" style="margin-top:16px"></div>
+  <div class="spisok" id="proba-spisok" style="margin-top:12px"></div>
+</section>
+
 <section style="border:none">
   <h2>Чем это посчитано</h2>
   <div class="plitki" id="plitki"></div>
@@ -159,6 +184,7 @@ footer{padding:26px 0 44px; color:var(--mute); font-size:13px}
 </div>
 
 <script src="razbor.js"></script>
+<script src="razbor-brauzer.js"></script>
 <script>
 (function(){
 "use strict";
@@ -427,6 +453,129 @@ function spisok(){
   }
   vse.forEach(function(x){ box.appendChild(kartochka(x.o, x.mesto)); });
 }
+
+/* ---------- проба на своих отзывах ----------
+   Считается прямо здесь, в браузере. Ничего никуда не отправляется,
+   ключи не нужны. Нейросетевой слой сюда не входит: обратиться к GigaChat
+   со страницы нельзя, Сбер такие запросы не принимает. Спорные отзывы
+   честно помечаются — их разбирают уже на своём ключе. */
+(function proba(){
+  var B = window.RAZBOR_BRAUZER;
+  var pole = document.getElementById("svoi");
+  var knopka = document.getElementById("razobrat");
+  var ochistit = document.getElementById("ochistit");
+  var itog = document.getElementById("proba-itog");
+  var papkiBox = document.getElementById("proba-papki");
+  var spisokBox = document.getElementById("proba-spisok");
+  if(!B || !pole) return;
+
+  var moi = [];
+  var vybrano = "all";
+
+  function risovat(){
+    papkiBox.innerHTML = "";
+    spisokBox.innerHTML = "";
+    if(!moi.length) return;
+
+    var po = {};
+    moi.forEach(function(x){
+      var k = x.r.layer === "ai" ? "_ai" : x.r.main;
+      po[k] = (po[k] || 0) + 1;
+    });
+
+    function papka(kod, chislo, imya, pod, cls){
+      var b = el("button", "papka " + cls);
+      b.type = "button";
+      b.dataset.k = kod;
+      b.setAttribute("aria-pressed", vybrano === kod ? "true" : "false");
+      b.appendChild(el("div", "n", String(chislo)));
+      b.appendChild(el("div", "t", imya));
+      b.appendChild(el("div", "o", pod));
+      papkiBox.appendChild(b);
+    }
+
+    papka("all", moi.length, "Все отзывы", "показать всё", "");
+    D.cats.forEach(function(c){
+      if(!po[c.id]) return;
+      papka(c.id, po[c.id], c.name,
+            c.chuzhoe ? "не зона производителя" : (c.bad ? "чинит: " + c.owner : "претензий нет"),
+            c.chuzhoe ? "chuzh" : (c.bad ? "bad" : "good"));
+    });
+    if(po._ai) papka("_ai", po._ai, "Несколько претензий разом", "тут нужна нейросеть", "ai");
+
+    papkiBox.onclick = function(e){
+      var b = e.target.closest ? e.target.closest(".papka") : null;
+      if(!b) return;
+      vybrano = (vybrano === b.dataset.k) ? "all" : b.dataset.k;
+      risovat();
+    };
+
+    var pokaz = moi.filter(function(x){
+      if(vybrano === "all") return true;
+      if(vybrano === "_ai") return x.r.layer === "ai";
+      return x.r.layer !== "ai" && x.r.main === vybrano;
+    });
+
+    pokaz.slice(0, 40).forEach(function(x, i){
+      var c = cat(x.r.main);
+      var v = x.r.layer === "ai" ? "ai" : (c && c.chuzhoe ? "chuzh" : (c && c.bad ? "bad" : "good"));
+      var d = el("div", "otz " + v);
+      var verh = el("div", "verh");
+      verh.appendChild(el("span", "mesto", String(i + 1)));
+      verh.appendChild(el("span", "metka " + v,
+        x.r.layer === "ai" ? "Несколько претензий" : (c ? c.name : "—")));
+      if(v === "bad" && c) verh.appendChild(el("span", null, "чинит: " + c.owner));
+      if(x.o.date) verh.appendChild(el("span", null, x.o.date));
+      d.appendChild(verh);
+      d.appendChild(el("p", null, x.o.text));
+      var niz = el("div", "niz");
+      niz.innerHTML = (x.r.layer === "ai" ? "<b>Правилам не хватило:</b> " : "<b>Правило:</b> ") + x.r.why;
+      d.appendChild(niz);
+      spisokBox.appendChild(d);
+    });
+    if(pokaz.length > 40){
+      spisokBox.appendChild(el("div", "pusto", "Показаны первые 40 из " + pokaz.length));
+    }
+  }
+
+  knopka.addEventListener("click", function(){
+    var syroe = pole.value;
+    if(!syroe.trim()){
+      itog.textContent = "Вставьте отзывы в поле выше.";
+      return;
+    }
+    knopka.disabled = true;
+    itog.textContent = "Считаю…";
+
+    setTimeout(function(){
+      var otzyvy = [];
+      try { otzyvy = B.razobrat(syroe); } catch(e){ otzyvy = []; }
+
+      if(!otzyvy.length){
+        itog.textContent = "Отзывов не нашлось. Скопируйте кусок страницы целиком, вместе со строками про цвет и размер — по ним программа и находит, где начинается отзыв.";
+        moi = [];
+        risovat();
+        knopka.disabled = false;
+        return;
+      }
+
+      moi = otzyvy.map(function(o){ return {o: o, r: B.classify(o)}; });
+      var kodom = moi.filter(function(x){ return x.r.layer === "code"; }).length;
+      vybrano = "all";
+      itog.textContent = "Разобрано " + moi.length + ", из них " + kodom +
+        " правилами без нейросети (" + Math.round(kodom / moi.length * 100) + "%).";
+      risovat();
+      knopka.disabled = false;
+    }, 30);
+  });
+
+  ochistit.addEventListener("click", function(){
+    pole.value = "";
+    moi = [];
+    itog.textContent = "";
+    risovat();
+  });
+})();
 
 document.getElementById("q").addEventListener("input", spisok);
 document.getElementById("sbros").addEventListener("click", function(){
