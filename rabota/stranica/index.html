@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Страница открыта по ссылке, но в поиск не попадает: разбор чужих жалоб
+     не должен всплывать в Яндексе по названию компании. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Разбор отзывов — Ника</title>
+<style>
+:root{
+  --bg:#000; --near:#0B0C0E; --deep:#111316; --line:rgba(255,255,255,.10);
+  --ink:#F2F4F7; --dim:#8E959D; --mute:#5C646E;
+  --sig:#00E08A; --alarm:#FF4D3D; --warn:#FFB020;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px; margin:0 auto; padding:0 20px}
+
+header{padding:38px 0 26px; border-bottom:1px solid var(--line)}
+h1{font-size:clamp(22px,3.4vw,31px); font-weight:600; letter-spacing:-.025em; margin:0 0 6px}
+.sub{color:var(--dim); font-size:14.5px}
+.sub b{color:var(--ink); font-weight:500}
+
+.tovary{display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 0}
+.tovary button{font-family:inherit; font-size:14px; cursor:pointer; padding:9px 15px;
+  border-radius:999px; background:transparent; border:1px solid var(--line); color:var(--dim);
+  transition:.2s}
+.tovary button:hover{border-color:rgba(255,255,255,.3); color:var(--ink)}
+.tovary button[aria-pressed="true"]{background:var(--sig); border-color:var(--sig); color:#04120C; font-weight:500}
+
+section{padding:30px 0; border-bottom:1px solid var(--line)}
+h2{font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--sig); margin:0 0 16px}
+.pod{color:var(--dim); font-size:14px; margin:-8px 0 16px; max-width:76ch}
+
+.plitki{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);
+  border:1px solid var(--line); border-radius:14px; overflow:hidden}
+@media(max-width:720px){.plitki{grid-template-columns:repeat(2,1fr)}}
+.plitka{background:var(--near); padding:18px 16px}
+.plitka b{display:block; font-size:27px; font-weight:600; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.plitka span{display:block; font-size:12.5px; color:var(--mute); margin-top:5px; line-height:1.35}
+.plitka.zal b{color:var(--alarm)}
+.plitka.ok b{color:var(--sig)}
+
+.orow{display:grid; grid-template-columns:150px 1fr 44px; gap:12px; align-items:center;
+  padding:7px 0; font-size:14px}
+@media(max-width:560px){.orow{grid-template-columns:110px 1fr 36px; font-size:13px}}
+.orow .on{color:var(--dim)}
+.obar{height:7px; border-radius:7px; background:rgba(255,255,255,.08); overflow:hidden}
+.obar i{display:block; height:100%; background:var(--sig); border-radius:7px}
+.orow b{text-align:right; font-variant-numeric:tabular-nums}
+
+.papki{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:10px}
+.papka{background:var(--near); border:1px solid var(--line); border-radius:13px;
+  padding:15px 15px 16px; cursor:pointer; text-align:left; font-family:inherit;
+  color:inherit; transition:.2s}
+.papka:hover{border-color:rgba(255,255,255,.28); background:var(--deep)}
+.papka[aria-pressed="true"]{border-color:var(--sig); background:var(--deep)}
+.papka .n{font-size:25px; font-weight:600; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.papka .t{font-size:13.5px; margin-top:3px}
+.papka .o{font-size:12px; color:var(--mute); margin-top:7px}
+.papka.bad .n{color:var(--warn)}
+.papka.ai .n{color:#7AA7FF}
+.papka.good .n{color:var(--sig)}
+.papka.chuzh .n{color:var(--mute)}
+.otz.chuzh{border-left-color:var(--mute)}
+.metka.chuzh{background:rgba(255,255,255,.07); color:var(--dim)}
+
+.poisk{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
+.poisk input{flex:1; min-width:220px; font-family:inherit; font-size:15px; color:var(--ink);
+  background:var(--near); border:1px solid var(--line); border-radius:11px; padding:11px 14px}
+.poisk input:focus{outline:none; border-color:var(--sig)}
+.poisk .sbros{font-family:inherit; font-size:13.5px; cursor:pointer; color:var(--dim);
+  background:none; border:none; text-decoration:underline; padding:6px}
+.poisk .sbros:hover{color:var(--ink)}
+.skolko{font-size:13.5px; color:var(--mute)}
+
+.spisok{display:grid; gap:9px}
+.otz{background:var(--near); border:1px solid var(--line); border-radius:13px; padding:14px 15px;
+  border-left:3px solid var(--line)}
+.otz.bad{border-left-color:var(--warn)}
+.otz.ai{border-left-color:#7AA7FF}
+.otz.good{border-left-color:var(--sig)}
+.otz .verh{display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin-bottom:8px;
+  font-size:12px; color:var(--mute)}
+.mesto{display:inline-flex; align-items:center; justify-content:center; min-width:25px; height:20px;
+  padding:0 6px; border-radius:6px; background:rgba(255,255,255,.08); color:var(--dim);
+  font-weight:600; font-variant-numeric:tabular-nums}
+.metka{padding:3px 9px; border-radius:999px; font-size:11.5px; font-weight:500;
+  background:rgba(255,255,255,.07); color:var(--ink)}
+.metka.bad{background:rgba(255,176,32,.14); color:var(--warn)}
+.metka.ai{background:rgba(122,167,255,.14); color:#9CBBFF}
+.metka.good{background:rgba(0,224,138,.12); color:var(--sig)}
+.otz p{margin:0; font-size:14.5px; line-height:1.55}
+.otz .niz{margin-top:9px; font-size:12.5px; color:var(--mute); line-height:1.45}
+.otz .niz b{color:var(--dim); font-weight:500}
+.pusto{color:var(--mute); padding:26px 0; text-align:center}
+
+.zametka{background:var(--near); border:1px solid var(--line); border-left:3px solid var(--sig);
+  border-radius:13px; padding:18px 18px 16px; font-size:14.5px; line-height:1.6; color:var(--dim);
+  max-width:82ch}
+.zametka b{color:var(--ink); font-weight:600}
+.zametka p{margin:0 0 .7em}
+.zametka p:last-child{margin:0}
+footer{padding:26px 0 44px; color:var(--mute); font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <h1>Разбор отзывов с Озона</h1>
+  <p class="sub">Товары <b>Ники</b>. Каждый отзыв разложен по типу проблемы и поставлен в очередь по важности.</p>
+  <div class="tovary" id="tovary"></div>
+</header>
+
+<section>
+  <h2>Что нашлось в отзывах</h2>
+  <p class="pod">Каждый отзыв отнесён к одному типу проблемы. Нажмите на папку — внизу останутся только её отзывы.</p>
+  <div class="papki" id="papki"></div>
+</section>
+
+<section>
+  <h2>Очередь: чем заняться первым</h2>
+  <p class="pod">Все отзывы, сверху самые важные. Важность считается без нейросети: вред человеку, сколько претензий в одном отзыве, как часто про это же пишут другие, насколько свежо.</p>
+  <p class="pod" style="margin-top:-10px">Серое число слева — <b style="color:#F2F4F7">место в очереди</b> среди всех отзывов. При фильтре и поиске номера остаются прежними, поэтому идут с пропусками: сразу видно, высоко стоит отзыв или низко.</p>
+  <div class="poisk">
+    <input id="q" type="search" placeholder="Искать по словам в отзыве: кривая, упаковка, заглушки…">
+    <button class="sbros" id="sbros" type="button">сбросить</button>
+    <span class="skolko" id="skolko"></span>
+  </div>
+  <div class="spisok" id="spisok"></div>
+</section>
+
+<section>
+  <h2>Кто это чинит</h2>
+  <p class="pod">Категория говорит, что случилось. Эта полоса говорит, кому с этим идти. «Пришло разбитым» — не цех, а упаковка.</p>
+  <div id="owners"></div>
+</section>
+
+<section id="razmery-sekciya">
+  <h2>По размерам изделия</h2>
+  <p class="pod">Видно, беда у одной модификации или у всех сразу.</p>
+  <div id="razmery"></div>
+</section>
+
+<section style="border:none">
+  <h2>Чем это посчитано</h2>
+  <div class="plitki" id="plitki"></div>
+  <div class="zametka" id="zametka" style="margin-top:16px"></div>
+</section>
+
+<footer id="footer"></footer>
+
+</div>
+
+<script src="razbor.js"></script>
+<script>
+(function(){
+"use strict";
+
+var D = window.RAZBOR;
+var tovar = D.tovary[0];
+var vybranaPapka = "all";
+
+function cat(id){
+  for(var i = 0; i < D.cats.length; i++) if(D.cats[i].id === id) return D.cats[i];
+  return null;
+}
+/* Отзыв, который разобрала нейросеть, показываем как обычный: у него есть
+   категория. Отдельной меткой отмечаем, что за него платили. */
+function vid(o){                       // какого рода отзыв: беда, спорный, хороший
+  if(o.layer === "ai" && !o.razobran) return "ai";
+  var c = cat(o.cat);
+  if(c && c.chuzhoe) return "chuzh";   // не зона «Ники»: акции, пункт выдачи
+  return (c && c.bad) ? "bad" : "good";
+}
+function imya(o){
+  if(o.layer === "ai" && !o.razobran) return "Несколько претензий";
+  var c = cat(o.cat);
+  return c ? c.name : "—";
+}
+function zhdet(o){ return o.layer === "ai" && !o.razobran; }
+function el(t, cls, txt){
+  var e = document.createElement(t);
+  if(cls) e.className = cls;
+  if(txt != null) e.textContent = txt;
+  return e;
+}
+function skl(n, a, b, c){
+  var x = Math.abs(n) % 100, y = x % 10;
+  if(x > 10 && x < 20) return c;
+  if(y > 1 && y < 5) return b;
+  if(y === 1) return a;
+  return c;
+}
+
+/* ---------- выбор товара ---------- */
+(function(){
+  var box = document.getElementById("tovary");
+  D.tovary.forEach(function(t, i){
+    var b = el("button", null, t.name);
+    b.type = "button";
+    b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+    b.addEventListener("click", function(){
+      [].forEach.call(box.children, function(x){ x.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      tovar = t;
+      vybranaPapka = "all";
+      risovat();
+    });
+    box.appendChild(b);
+  });
+})();
+
+/* ---------- всё, что рисуется заново при смене товара ---------- */
+function risovat(){
+  var vse = tovar.otzyvy;
+  var bedy = vse.filter(function(o){ return vid(o) !== "good"; });
+  var kodom = vse.filter(function(o){ return o.layer === "code"; });
+
+  // плитки
+  var pl = document.getElementById("plitki");
+  pl.innerHTML = "";
+  [[String(vse.length), "отзывов разобрано", ""],
+   [String(bedy.length), "с претензией", "zal"],
+   [String(kodom.length), "хватило правил, без нейросети", "ok"],
+   [String(vse.length - kodom.length), "нужна нейросеть", ""]
+  ].forEach(function(t){
+    var d = el("div", "plitka " + t[2]);
+    d.appendChild(el("b", null, t[0]));
+    d.appendChild(el("span", null, t[1]));
+    pl.appendChild(d);
+  });
+
+  // кто чинит
+  var ow = document.getElementById("owners");
+  ow.innerHTML = "";
+  // Отзывы, ждущие нейросеть, в полосы не идут: ответственный по ним ещё
+  // не определён, и с длинной полосой они выглядели бы главной бедой.
+  var acc = {}, zhdut = 0;
+  bedy.forEach(function(o){
+    if(zhdet(o)){ zhdut++; return; }
+    var c = cat(o.cat);
+    acc[c ? c.owner : "—"] = (acc[c ? c.owner : "—"] || 0) + 1;
+  });
+  var spis = Object.keys(acc).map(function(k){ return [k, acc[k]]; })
+                   .sort(function(a, b){ return b[1] - a[1]; });
+  var max = spis.length ? spis[0][1] : 1;
+  spis.forEach(function(p){
+    var r = el("div", "orow");
+    r.appendChild(el("span", "on", p[0]));
+    var bar = el("div", "obar");
+    var f = el("i"); f.style.width = Math.round(p[1] / max * 100) + "%";
+    bar.appendChild(f); r.appendChild(bar);
+    r.appendChild(el("b", null, String(p[1])));
+    ow.appendChild(r);
+  });
+  if(zhdut){
+    var hvost = el("p", "pod");
+    hvost.style.margin = "14px 0 0";
+    hvost.textContent = "Ещё " + zhdut + " " + skl(zhdut, "отзыв", "отзыва", "отзывов") +
+      " ждут нейросеть: там несколько претензий разом, и кто виноват — решать ей.";
+    ow.appendChild(hvost);
+  }
+
+  // папки
+  var pk = document.getElementById("papki");
+  pk.innerHTML = "";
+  var po = {};
+  vse.forEach(function(o){
+    var k = zhdet(o) ? "_ai" : o.cat;
+    po[k] = (po[k] || 0) + 1;
+  });
+  var vsePapka = el("button", "papka");
+  vsePapka.type = "button";
+  vsePapka.setAttribute("aria-pressed", vybranaPapka === "all" ? "true" : "false");
+  vsePapka.dataset.k = "all";
+  vsePapka.appendChild(el("div", "n", String(vse.length)));
+  vsePapka.appendChild(el("div", "t", "Все отзывы"));
+  vsePapka.appendChild(el("div", "o", "показать всё"));
+  pk.appendChild(vsePapka);
+
+  D.cats.forEach(function(c){
+    if(!po[c.id]) return;
+    var b = el("button", "papka " + (c.chuzhoe ? "chuzh" : (c.bad ? "bad" : "good")));
+    b.type = "button";
+    b.dataset.k = c.id;
+    b.setAttribute("aria-pressed", vybranaPapka === c.id ? "true" : "false");
+    b.appendChild(el("div", "n", String(po[c.id])));
+    b.appendChild(el("div", "t", c.name));
+    b.appendChild(el("div", "o", c.chuzhoe ? "не зона Ники, в очередь не идёт"
+                                 : (c.bad ? "чинит: " + c.owner : "претензий нет")));
+    pk.appendChild(b);
+  });
+  if(po._ai){
+    var a = el("button", "papka ai");
+    a.type = "button";
+    a.dataset.k = "_ai";
+    a.setAttribute("aria-pressed", vybranaPapka === "_ai" ? "true" : "false");
+    a.appendChild(el("div", "n", String(po._ai)));
+    a.appendChild(el("div", "t", "Несколько претензий разом"));
+    a.appendChild(el("div", "o", "правил не хватило, нужна нейросеть"));
+    pk.appendChild(a);
+  }
+  pk.onclick = function(e){
+    var b = e.target.closest ? e.target.closest(".papka") : null;
+    if(!b) return;
+    vybranaPapka = (vybranaPapka === b.dataset.k) ? "all" : b.dataset.k;
+    [].forEach.call(pk.children, function(x){
+      x.setAttribute("aria-pressed", x.dataset.k === vybranaPapka ? "true" : "false");
+    });
+    spisok();
+    document.getElementById("spisok").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+
+  // По размерам. У гладильных досок размера нет — там модификации это цвета,
+  // и разрез по ним ничего не объясняет: кривые ножки не зависят от цвета
+  // чехла. В таком случае раздел просто прячем, чтобы не забивать экран.
+  var rz = document.getElementById("razmery");
+  rz.innerHTML = "";
+  var pr = {};
+  bedy.forEach(function(o){ pr[o.razmer] = (pr[o.razmer] || 0) + 1; });
+  var eto_razmery = Object.keys(pr).length > 0 &&
+                    Object.keys(pr).every(function(k){ return /^[\d.]+\s*см$/.test(k); });
+  document.getElementById("razmery-sekciya").hidden = !eto_razmery;
+  if(!eto_razmery) pr = {};
+  var rlist = Object.keys(pr).map(function(k){ return [k, pr[k]]; })
+                    .sort(function(a, b){ return b[1] - a[1]; });
+  var rmax = rlist.length ? rlist[0][1] : 1;
+  rlist.forEach(function(p){
+    var r = el("div", "orow");
+    r.appendChild(el("span", "on", p[0]));
+    var bar = el("div", "obar");
+    var f = el("i"); f.style.width = Math.round(p[1] / rmax * 100) + "%";
+    bar.appendChild(f); r.appendChild(bar);
+    r.appendChild(el("b", null, String(p[1])));
+    rz.appendChild(r);
+  });
+
+  // как посчитано
+  var z = document.getElementById("zametka");
+  z.innerHTML = "";
+  var p1 = el("p");
+  p1.innerHTML = "<b>Из " + vse.length + " отзывов " + kodom.length + " разобраны обычной программой</b> — " +
+    "по словам, без единого обращения к нейросети. Это бесплатно и мгновенно, " +
+    "запускать можно хоть каждый час.";
+  var p2 = el("p");
+  p2.innerHTML = "<b>Оставшиеся " + (vse.length - kodom.length) + " ждут нейросеть.</b> " +
+    "Это отзывы, где претензий сразу несколько и надо выбрать главную, " +
+    "или где знакомых слов нет вовсе. Платить приходится только за них.";
+  var p3 = el("p");
+  p3.innerHTML = "<b>Очередь считается правилами, а не моделью.</b> Наверх поднимают: вред человеку, " +
+    "несколько претензий в одном отзыве, повторяемость у других покупателей и свежесть.";
+  z.appendChild(p1); z.appendChild(p2); z.appendChild(p3);
+
+  spisok();
+
+  document.getElementById("footer").textContent =
+    "Артикул " + tovar.artikul + ". Отзывы собраны со страниц Озона " + D.sobrano +
+    ". Имена покупателей не выгружались.";
+}
+
+/* ---------- карточка отзыва ---------- */
+function kartochka(o, mesto){
+  var v = vid(o);
+  var d = el("div", "otz " + v);
+
+  var verh = el("div", "verh");
+  if(mesto){
+    var nomer = el("span", "mesto", String(mesto));
+    nomer.title = "Место в очереди по важности, из " + tovar.otzyvy.length;
+    verh.appendChild(nomer);
+  }
+  verh.appendChild(el("span", "metka " + v, imya(o)));
+  if(o.razobran) verh.appendChild(el("span", "metka ai", "нейросеть"));
+  var c = cat(o.cat);
+  if(v === "bad" && c) verh.appendChild(el("span", null, "чинит: " + c.owner));
+  if(v === "chuzh") verh.appendChild(el("span", null, "не зона Ники"));
+  if(o.date) verh.appendChild(el("span", null, o.date));
+  if(o.razmer) verh.appendChild(el("span", null, o.razmer));
+  d.appendChild(verh);
+
+  d.appendChild(el("p", null, o.text));
+
+  var niz = el("div", "niz");
+  if(o.razobran){
+    niz.innerHTML = "<b>Правилам не хватило:</b> " + o.why +
+                    "<br><b>Решила нейросеть:</b> " + o.aiWhy;
+  } else if(o.layer === "ai"){
+    niz.innerHTML = "<b>Правилам не хватило:</b> " + o.why;
+  } else {
+    niz.innerHTML = "<b>Правило:</b> " + o.why;
+  }
+  d.appendChild(niz);
+  return d;
+}
+
+/* ---------- список с поиском ---------- */
+function spisok(){
+  var box = document.getElementById("spisok");
+  var q = document.getElementById("q").value.trim().toLowerCase();
+  box.innerHTML = "";
+
+  // Номер — место в общей очереди. Считается один раз по всему списку,
+  // чтобы при поиске отзыв не менял свой номер.
+  var vse = [];
+  tovar.otzyvy.forEach(function(o, i){
+    if(vybranaPapka === "_ai" && !zhdet(o)) return;
+    if(vybranaPapka !== "all" && vybranaPapka !== "_ai" &&
+       (zhdet(o) || o.cat !== vybranaPapka)) return;
+    if(q && o.text.toLowerCase().indexOf(q) < 0) return;
+    vse.push({o:o, mesto:i + 1});
+  });
+
+  document.getElementById("skolko").textContent =
+    vse.length + " " + skl(vse.length, "отзыв", "отзыва", "отзывов") +
+    (vse.length === tovar.otzyvy.length ? "" : " из " + tovar.otzyvy.length);
+
+  if(!vse.length){
+    box.appendChild(el("div", "pusto", "Ничего не нашлось. Попробуйте другое слово."));
+    return;
+  }
+  vse.forEach(function(x){ box.appendChild(kartochka(x.o, x.mesto)); });
+}
+
+document.getElementById("q").addEventListener("input", spisok);
+document.getElementById("sbros").addEventListener("click", function(){
+  document.getElementById("q").value = "";
+  vybranaPapka = "all";
+  risovat();
+});
+
+risovat();
+})();
+</script>
+
+</body>
+</html>

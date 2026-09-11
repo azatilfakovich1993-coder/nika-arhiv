@@ -23,9 +23,12 @@ var otmena = (process.argv[2] || "").toLowerCase() === "otmenit";
 
 var adres = otmena
   ? API + "deleteWebhook?drop_pending_updates=false"
+  /* callback_query — это нажатия кнопок. Без него Телеграм присылает только
+     сообщения, а нажатия молча выбрасывает: кнопки выглядят живыми, но
+     ничего не происходит. */
   : API + "setWebhook?url=" + encodeURIComponent(cfg.WEBHOOK_URL) +
     "&secret_token=" + encodeURIComponent(cfg.WEBHOOK_SECRET) +
-    "&allowed_updates=" + encodeURIComponent('["message"]');
+    "&allowed_updates=" + encodeURIComponent('["message","callback_query"]');
 
 fetch(adres)
   .then(function(r){ return r.json(); })

@@ -2310,7 +2310,7 @@ djn
 
 
 ## АЗАТ
-MDE5ZjhkNzQtYTVkYy03NzgzLWE1OTMtNGEzZjZhODY1MDJjOjI1ZjI3NzI2LTI2ZGMtNDc5Yi05Mzk0LTZjODYzNzM3MjdkYw==
+[КЛЮЧ УБРАН]
 
 
 ## КЛОД
@@ -9047,7 +9047,7 @@ https://github.com/azatilfakovich1993-coder/second-brain.git
 
 В разделе Environment Variables добавь пока эти две (остальные — Yandex/Supabase — добавим позже, когда заведёшь эти сервисы, сервер запустится и без них, просто обработка заметок ещё не заработает):
 
-- `GIGACHAT_AUTH_KEY` = `MDE5ZjhkNzQtYTVkYy03NzgzLWE1OTMtNGEzZjZhODY1MDJjOjI1ZjI3NzI2LTI2ZGMtNDc5Yi05Mzk0LTZjODYzNzM3MjdkYw==`
+- `GIGACHAT_AUTH_KEY` = `[КЛЮЧ УБРАН]`
 - `TELEGRAM_BOT_TOKEN` = `[КЛЮЧ УБРАН]`
 
 Нажми «Create Web Service» — Render начнёт деплой, это займёт пару минут.
@@ -10979,7 +10979,7 @@ https://github.com/azatilfakovich1993-coder/ai-click-content-bot
 - **Instance Type**: Free
 В разделе Environment Variables добавь эти четыре:
 
-- `GIGACHAT_AUTH_KEY` = `MDE5ZjhkNzQtYTVkYy03NzgzLWE1OTMtNGEzZjZhODY1MDJjOjI1ZjI3NzI2LTI2ZGMtNDc5Yi05Mzk0LTZjODYzNzM3MjdkYw==`
+- `GIGACHAT_AUTH_KEY` = `[КЛЮЧ УБРАН]`
 - `TELEGRAM_BOT_TOKEN` = `[КЛЮЧ УБРАН]`
 - `TELEGRAM_CHANNEL_ID` = `@Ai_Clickk`
 - `TELEGRAM_OWNER_ID` = `805705211`
@@ -11300,7 +11300,7 @@ Summary:
      }
      ```
    - `C:\Users\1\Pictures\ai-click-content-bot\src\notify\telegram.js` — added `sendPoll(env, chatId, question, options)`.
-   - `.env` (gitignored, real values, NOT to be committed): `GIGACHAT_AUTH_KEY=MDE5ZjhkNzQtYTVkYy03NzgzLWE1OTMtNGEzZjZhODY1MDJjOjI1ZjI3NzI2LTI2ZGMtNDc5Yi05Mzk0LTZjODYzNzM3MjdkYw==`, `TELEGRAM_BOT_TOKEN=[КЛЮЧ УБРАН]`, `TELEGRAM_CHANNEL_ID=@Ai_Clickk`, `TELEGRAM_OWNER_ID=805705211`.
+   - `.env` (gitignored, real values, NOT to be committed): `GIGACHAT_AUTH_KEY=[КЛЮЧ УБРАН]`, `TELEGRAM_BOT_TOKEN=[КЛЮЧ УБРАН]`, `TELEGRAM_CHANNEL_ID=@Ai_Clickk`, `TELEGRAM_OWNER_ID=805705211`.
    - GitHub repo `https://github.com/azatilfakovich1993-coder/ai-click-content-bot`, `main` branch, most recent pushed commit hash: `fa5bda6` ("Retry up to 2 times on timeout (was 1)"). Render service `ai-click-content-bot` (URL `https://ai-click-content-bot.onrender.com`) is connected via auto-deploy-on-push and was confirmed Live as of that commit.
 
 4. Errors and fixes (chronological, each confirmed via live testing — this project's whole development process has been "test on real GigaChat/real Telegram, find the bug, fix, retest" rather than speculative fixes):
